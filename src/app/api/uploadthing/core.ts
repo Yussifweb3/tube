@@ -43,9 +43,7 @@ export const ourFileRouter = {
       if (!existingVideo) throw new UploadThingError("Video not found");
 
       if (existingVideo.thumbnailKey) {
-        const utapi = new UTApi({
-          token: process.env.UPLOADTHING_TOKEN!,
-        });
+        const utapi = new UTApi();
 
         await utapi.deleteFiles(existingVideo.thumbnailKey);
         await db
