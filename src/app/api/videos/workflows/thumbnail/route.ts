@@ -1,9 +1,9 @@
 import { and, eq } from "drizzle-orm";
 import { UTApi } from "uploadthing/server";
+import { serve } from "@upstash/workflow/nextjs";
 
 import { db } from "@/db";
 import { videos } from "@/db/schema";
-import { serve } from "@upstash/workflow/nextjs";
 
 interface InputType {
   userId: string;
@@ -29,22 +29,21 @@ export const { POST } = serve(async (context) => {
     return existingVideo;
   });
 
-  const { body } = await context.call<{ data: { url: string }[] }>(
-    "generate-thumbnail",
-    {
-      url: "https://api.openai.com/v1/images/generations",
-      method: "POST",
-      body: {
-        prompt,
-        n: 1,
-        modal: "dall-e-3",
-        size: "1792*1024",
-      },
-      headers: {
-        authorization: `Bearer ${process.env.OPENAI_API_KEY!}`,
-      },
-    }
-  );
+  const { body } = await context.call<{
+    data: { url: string }[];
+  }>("generate-thumbnail", {
+    url: "https://api.openai.com/v1/images/generations",
+    method: "POST",
+    body: {
+      prompt,
+      n: 1,
+      modal: "dall-e-3",
+      size: "1792*1024",
+    },
+    headers: {
+      authorization: `Bearer ${process.env.OPENAI_API_KEY!}`,
+    },
+  });
 
   const tempThumbnailUrl = body.data[0].url;
 
@@ -82,6 +81,6 @@ export const { POST } = serve(async (context) => {
         thumbnailKey: uploadedThumbnail.key,
         thumbnailUrl: uploadedThumbnail.url,
       })
-      .where(and(eq(videos.id, video.id), eq(videos.userId, video.userId)));
+      .where(and(eq(videos.id, videoId), eq(videos.userId, userId)));
   });
 });

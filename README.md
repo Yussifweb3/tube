@@ -30,6 +30,7 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 If you want to learn how to create it please follow below tutorial👇:
 ➡ Tutorial Link 💚 "Code With Antonio" Youtube Channel: [Ultimate Next 15 Course: Build a YouTube Clone (2025)](https://www.youtube.com/watch?v=ArmPzvHTcfQ)
+➡ Tutorial Link 💚 "Code With Antonio" Youtube Channel: [Ultimate Next 15 Course: Build a YouTube Clone (Part 2/2)](https://www.youtube.com/watch?v=ig26iRcMavQ)
 
 ---
 

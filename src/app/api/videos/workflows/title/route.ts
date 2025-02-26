@@ -1,8 +1,8 @@
 import { and, eq } from "drizzle-orm";
+import { serve } from "@upstash/workflow/nextjs";
 
 import { db } from "@/db";
 import { videos } from "@/db/schema";
-import { serve } from "@upstash/workflow/nextjs";
 
 interface InputType {
   userId: string;
@@ -75,6 +75,6 @@ export const { POST } = serve(async (context) => {
       .set({
         title: title || video.title,
       })
-      .where(and(eq(videos.id, video.id), eq(videos.userId, video.userId)));
+      .where(and(eq(videos.id, videoId), eq(videos.userId, userId)));
   });
 });
