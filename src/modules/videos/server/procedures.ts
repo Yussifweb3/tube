@@ -1,15 +1,43 @@
 import { z } from "zod";
-import { and, eq } from "drizzle-orm";
 import { UTApi } from "uploadthing/server";
+import { and, eq, getTableColumns } from "drizzle-orm";
 
 import { db } from "@/db";
 import { mux } from "@/lib/mux";
 import { TRPCError } from "@trpc/server";
 import { workflow } from "@/lib/workflow";
-import { videos, videoUpdateSchema } from "@/db/schema";
-import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
+import { users, videos, videoUpdateSchema } from "@/db/schema";
+import {
+  baseProcedure,
+  createTRPCRouter,
+  protectedProcedure,
+} from "@/trpc/init";
 
 export const videosRouter = createTRPCRouter({
+  getOne: baseProcedure
+    .input(
+      z.object({
+        id: z.string().uuid(),
+      })
+    )
+    .query(async ({ input }) => {
+      const [existingVideo] = await db
+        .select({
+          ...getTableColumns(videos),
+          user: {
+            ...getTableColumns(users),
+          },
+        })
+        .from(videos)
+        .innerJoin(users, eq(videos.userId, users.id))
+        .where(eq(videos.id, input.id));
+
+      if (!existingVideo) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      return existingVideo;
+    }),
   generateDescription: protectedProcedure
     .input(
       z.object({
@@ -66,6 +94,7 @@ export const videosRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      const utapi = new UTApi();
       const { id: userId } = ctx.user;
 
       const [existingVideo] = await db
@@ -80,8 +109,6 @@ export const videosRouter = createTRPCRouter({
       }
 
       if (existingVideo.thumbnailKey) {
-        const utapi = new UTApi();
-
         await utapi.deleteFiles(existingVideo.thumbnailKey);
         await db
           .update(videos)
@@ -97,8 +124,6 @@ export const videosRouter = createTRPCRouter({
           code: "BAD_REQUEST",
         });
       }
-
-      const utapi = new UTApi();
 
       const tempThumbnailUrl = `https://image.mux.com/${existingVideo.muxPlaybackId}/thumbnail.jpg`;
 

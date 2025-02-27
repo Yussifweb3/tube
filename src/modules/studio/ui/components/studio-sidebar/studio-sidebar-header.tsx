@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 
-import UserAvatar from "@/components/user-avatar";
+import { UserAvatar } from "@/components/user-avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   SidebarHeader,

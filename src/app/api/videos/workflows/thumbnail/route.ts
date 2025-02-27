@@ -37,8 +37,8 @@ export const { POST } = serve(async (context) => {
     body: {
       prompt,
       n: 1,
-      modal: "dall-e-3",
-      size: "1792*1024",
+      model: "dall-e-3",
+      size: "1792x1024",
     },
     headers: {
       authorization: `Bearer ${process.env.OPENAI_API_KEY!}`,
