@@ -14,7 +14,7 @@ interface VideoThumbnailProps {
 
 export const VideoThumbnailSkeleton = () => {
   return (
-    <div className="relative w-full overflow-hidden transition-all group-hover:rounded-none rounded-xl aspect-video">
+    <div className="relative w-full overflow-hidden rounded-xl aspect-video">
       <Skeleton className="size-full" />
     </div>
   );
