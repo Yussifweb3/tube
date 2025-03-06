@@ -92,14 +92,12 @@ export const VideoRowCard = ({
   const compactViews = useMemo(() => {
     return Intl.NumberFormat("en", {
       notation: "compact",
-      maximumFractionDigits: 1,
     }).format(data.viewCount);
   }, [data.viewCount]);
 
   const compactLikes = useMemo(() => {
     return Intl.NumberFormat("en", {
       notation: "compact",
-      maximumFractionDigits: 1,
     }).format(data.likeCount);
   }, [data.likeCount]);
 

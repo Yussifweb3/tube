@@ -6,39 +6,35 @@ import { ErrorBoundary } from "react-error-boundary";
 import { trpc } from "@/trpc/client";
 import { DEFAULT_LIMIT } from "@/constants";
 import { InfiniteScroll } from "@/components/infinite-scroll";
+
 import {
-  VideoGridCard,
-  VideoGridCardSkeleton,
-} from "@/modules/videos/ui/components/video-grid.card";
+  PlaylistGridCard,
+  PlaylistGridCardSkeleton,
+} from "../components/playlist-grid-card";
 
-interface HomeVideosSectionProps {
-  categoryId?: string;
-}
-
-export const HomeVideosSection = (props: HomeVideosSectionProps) => {
+export const PlaylistsSection = () => {
   return (
-    <Suspense key={props.categoryId} fallback={<HomeVideosSectionSkeleton />}>
+    <Suspense fallback={<PlaylistsSectionSkeleton />}>
       <ErrorBoundary fallback={<p>Error</p>}>
-        <HomeVideosSectionSuspense {...props} />
+        <PlaylistsSectionSuspense />
       </ErrorBoundary>
     </Suspense>
   );
 };
 
-const HomeVideosSectionSkeleton = () => {
+const PlaylistsSectionSkeleton = () => {
   return (
     <div className="gap-4 gap-y-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-5 [@media(min-width:2200px)]:grid-cols-6">
       {Array.from({ length: 18 }).map((_, index) => (
-        <VideoGridCardSkeleton key={index} />
+        <PlaylistGridCardSkeleton key={index} />
       ))}
     </div>
   );
 };
 
-const HomeVideosSectionSuspense = ({ categoryId }: HomeVideosSectionProps) => {
-  const [videos, query] = trpc.videos.getMany.useSuspenseInfiniteQuery(
+const PlaylistsSectionSuspense = () => {
+  const [playlists, query] = trpc.playlists.getMany.useSuspenseInfiniteQuery(
     {
-      categoryId,
       limit: DEFAULT_LIMIT,
     },
     {
@@ -47,12 +43,12 @@ const HomeVideosSectionSuspense = ({ categoryId }: HomeVideosSectionProps) => {
   );
 
   return (
-    <div>
+    <>
       <div className="gap-4 gap-y-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-5 [@media(min-width:2200px)]:grid-cols-6">
-        {videos.pages
+        {playlists.pages
           .flatMap((page) => page.items)
-          .map((video) => (
-            <VideoGridCard key={video.id} data={video} />
+          .map((playlist) => (
+            <PlaylistGridCard key={playlist.id} data={playlist} />
           ))}
       </div>
       <InfiniteScroll
@@ -60,6 +56,6 @@ const HomeVideosSectionSuspense = ({ categoryId }: HomeVideosSectionProps) => {
         isFetchingNextPage={query.isFetchingNextPage}
         fetchNextPage={query.fetchNextPage}
       />
-    </div>
+    </>
   );
 };
