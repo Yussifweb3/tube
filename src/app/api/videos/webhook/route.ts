@@ -37,7 +37,7 @@ export const POST = async (request: Request) => {
   let payload;
   try {
     payload = await request.json();
-  } catch (error) {
+  } catch {
     return new Response("Invalid JSON payload", { status: 400 });
   }
 
@@ -55,7 +55,7 @@ export const POST = async (request: Request) => {
       },
       SIGNING_SECRET
     );
-  } catch (error) {
+  } catch {
     return new Response("Invalid signature", { status: 401 });
   }
 
