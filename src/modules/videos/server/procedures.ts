@@ -15,6 +15,7 @@ import { db } from "@/db";
 import { mux } from "@/lib/mux";
 import { TRPCError } from "@trpc/server";
 import { workflow } from "@/lib/workflow";
+import { deleteFilesFromUploadThing } from "@/lib/utils";
 import {
   subscriptions,
   users,
@@ -28,7 +29,6 @@ import {
   createTRPCRouter,
   protectedProcedure,
 } from "@/trpc/init";
-import { use } from "react";
 
 export const videosRouter = createTRPCRouter({
   getManySubscribed: protectedProcedure
@@ -525,6 +525,22 @@ export const videosRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const { id: userId } = ctx.user;
+
+      const [existingVideo] = await db
+        .select({
+          thumbnailKey: videos.thumbnailKey,
+          previewKey: videos.previewKey,
+          muxAssetId: videos.muxAssetId,
+        })
+        .from(videos)
+        .where(and(eq(videos.id, input.id), eq(videos.userId, userId)));
+
+      if (!existingVideo) throw new TRPCError({ code: "NOT_FOUND" });
+
+      await deleteFilesFromUploadThing(
+        existingVideo.thumbnailKey,
+        existingVideo.previewKey
+      );
 
       const [removedVideo] = await db
         .delete(videos)

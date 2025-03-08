@@ -34,16 +34,30 @@ export const POST = async (request: Request) => {
     throw new Response("No signature", { status: 400 });
   }
 
-  const payload = await request.json();
+  let payload;
+  try {
+    payload = await request.json();
+  } catch (error) {
+    return new Response("Invalid JSON payload", { status: 400 });
+  }
+
+  if (!payload || typeof payload !== "object") {
+    return new Response("Invalid payload format", { status: 400 });
+  }
+
   const body = JSON.stringify(payload);
 
-  mux.webhooks.verifySignature(
-    body,
-    {
-      "mux-signature": muxSignature,
-    },
-    SIGNING_SECRET
-  );
+  try {
+    mux.webhooks.verifySignature(
+      body,
+      {
+        "mux-signature": muxSignature,
+      },
+      SIGNING_SECRET
+    );
+  } catch (error) {
+    return new Response("Invalid signature", { status: 401 });
+  }
 
   switch (payload.type as WebhookEvent["type"]) {
     case "video.asset.created": {

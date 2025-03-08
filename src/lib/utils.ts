@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { UTApi } from "uploadthing/server";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -16,4 +17,18 @@ export const formatDuration = (duration: number) => {
 
 export const snakeCaseToTitle = (str: string) => {
   return str.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
+};
+
+export const deleteFilesFromUploadThing = async (
+  thumbnailKey: string | null,
+  previewKey: string | null
+) => {
+  const utApi = new UTApi();
+
+  const deleteUploads = [];
+
+  if (thumbnailKey) deleteUploads.push(utApi.deleteFiles(thumbnailKey));
+  if (previewKey) deleteUploads.push(utApi.deleteFiles(previewKey));
+
+  await Promise.all(deleteUploads);
 };
