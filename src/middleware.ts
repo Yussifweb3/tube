@@ -1,13 +1,13 @@
+export const runtime = "nodejs"; // Specify Node.js runtime for this middleware
+
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
 const isProtectedRoute = createRouteMatcher([
   "/studio(.*)",
   "/subscriptions",
-  "/feed/subcribed",
+  "/feed/subscribed",
   "/playlists(.*)",
 ]);
-
-export const runtime = "nodejs"; // Ensure this middleware runs in Node.js runtime
 
 export default clerkMiddleware(async (auth, req) => {
   if (isProtectedRoute(req)) await auth.protect();
