@@ -7,6 +7,8 @@ const isProtectedRoute = createRouteMatcher([
   "/playlists(.*)",
 ]);
 
+export const runtime = "nodejs"; // Ensure this middleware runs in Node.js runtime
+
 export default clerkMiddleware(async (auth, req) => {
   if (isProtectedRoute(req)) await auth.protect();
 });
