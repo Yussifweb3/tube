@@ -9,9 +9,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  experimental: {
-    runtime: "nodejs", // Use Node.js runtime globally
-  },
 };
 
 export default nextConfig;
